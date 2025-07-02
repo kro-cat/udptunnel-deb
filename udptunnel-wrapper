@@ -1,0 +1,85 @@
+#!/usr/bin/env sh
+
+EXECNAME="udptunnel-wrapper"
+
+log() {
+  echo "${EXECNAME}: $@"
+}
+
+usage() {
+  cat - <<EOF
+Usage: ${EXECNAME} CONFIG_FILE
+
+Options:
+  -h, --help            print this message
+EOF
+}
+
+options=$(getopt -o h -l help -- $@)
+eval set -- "${options}"
+
+while :; do
+  case "$1" in 
+    -h|--help) usage && exit 0 ;;
+    *) break ;;
+  esac
+done
+
+shift 1
+
+if [ "$#" -ne 1 ]
+then
+  log "ERROR: path to config file is required"
+  usage
+  exit 2
+fi
+
+CONFIG_FILE="$(cat "$(realpath "$1")")"
+shift 1
+
+getprop() {
+  SECTION="GLOBAL"
+  PROPERTY="$1"
+  echo "${CONFIG_FILE}" | \
+    sed -nr -e '/^\['"${SECTION}"'\]/I,/^\[/{/^'"${PROPERTY}"'\s*=/I{s/^[^=]+=\s*//;p}}' | \
+    sed 's/\s+$/\n/;$s/\n//'
+}
+
+# hooks
+PRE_UP="$(getprop PREUP)"
+POST_UP="$(getprop POSTUP)"
+PRE_DOWN="$(getprop PREDOWN)"
+POST_DOWN="$(getprop POSTDOWN)"
+
+# config
+MODE="$(getprop MODE | tr '[:upper:]' '[:lower:]' )"
+
+case "${MODE}" in
+  server) # server (tcp->udp)
+    UDPT_MODE="-s"
+    [ -z "$(getprop LISTENADDRESS)" ] || log "WARN: ListenAddress is ignored in server mode"
+    LISTEN="$(getprop LISTENPORT)"
+    CONNECT="$(getprop ENDPOINT)"
+    ;;
+  *) # client (udp->tcp)
+    UDPT_MODE="-c"
+    LISTEN="$(getprop LISTENADDRESS):$(getprop LISTENPORT)"
+    CONNECT="$(getprop ENDPOINT)"
+    ;;
+esac
+
+UDPT_ARGS=""
+
+ENABLERTP="$(getprop ENABLERTP)"
+case "${ENABLERTP}" in
+  [Yy]*|1) UDPT_ARGS="-r"
+esac
+
+LOGLEVEL="$(getprop LOGGINGLEVEL)"
+case "${LOGLEVEL}" in
+  1) UDPT_ARGS="${UDPT_ARGS} -v" ;;
+  2) UDPT_ARGS="${UDPT_ARGS} -vv" ;;
+  3) UDPT_ARGS="${UDPT_ARGS} -vvv" ;;
+esac
+
+udptunnel "${UDPT_MODE}" "${LISTEN}" ${UDPT_ARGS} "${CONNECT}"

@@ -1,0 +1,31 @@
+[Unit]
+Description=udptunnel
+Documentation=man:udptunnel(1)
+
+[Service]
+Type=notify
+Restart=on-failure
+ExecStart=/usr/lib/udptunnel/udptunnel-wrapper /etc/udptunnel/%i.conf
+StandardOutput=journal
+StandardError=journal
+DynamicUser=yes
+KeyringMode=private
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectHostname=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+RemoveIPC=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+
+[Install]
+WantedBy=network-online.target
