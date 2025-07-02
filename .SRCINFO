@@ -1,0 +1,14 @@
+pkgbase = udptunnel-git
+	pkgdesc = tunnel UDP packets over a TCP connection
+	pkgver = 1.1
+	pkgrel = 10
+	url = http://www1.cs.columbia.edu/~lennox/udptunnel/
+	arch = x86_64
+	license = Unknown
+	depends = libnsl
+	depends = glibc
+	provides = udptunnel
+	source = https://mirrors.kernel.org/ubuntu/pool/universe/u/udptunnel/udptunnel_1.1-10_amd64.deb
+	sha256sums = 99d4c88fe7c04c77ff9ef4578e57d37eef7a6cb4e44c4be76e8839be6bcec398
+
+pkgname = udptunnel-git
