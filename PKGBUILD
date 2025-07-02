@@ -1,5 +1,5 @@
 # Maintainer: Kara <krocat1147@gmail.com>
-pkgname=udptunnel-git
+pkgname=udptunnel-deb
 _pkgname=udptunnel
 pkgver=1.1
 pkgrel=10
@@ -9,7 +9,7 @@ url="http://www1.cs.columbia.edu/~lennox/udptunnel/"
 license=('Unknown')
 provides=('udptunnel')
 depends=(
-  'libnsl'
+  'libnsl2'
   'glibc'
 )
 #install=$pkgname.install
