@@ -1,8 +1,10 @@
 # Maintainer: Kara <krocat1147@gmail.com>
 pkgname=udptunnel-deb
 _pkgname=udptunnel
-pkgver=1.1
-pkgrel=10
+pkgver=1.1.1
+_pkgver=1.1
+pkgrel=1
+_pkgrel=10
 pkgdesc="tunnel UDP packets over a TCP connection"
 arch=('x86_64')
 url="http://www1.cs.columbia.edu/~lennox/udptunnel/"
@@ -14,7 +16,7 @@ depends=(
 )
 #install=$pkgname.install
 source=(
-  "https://mirrors.kernel.org/ubuntu/pool/universe/u/${_pkgname}/${_pkgname}_${pkgver}-${pkgrel}_amd64.deb"
+  "https://mirrors.kernel.org/ubuntu/pool/universe/u/${_pkgname}/${_pkgname}_${_pkgver}-${_pkgrel}_amd64.deb"
   'udptunnel@.service'
   'udptunnel-wrapper'
 )
