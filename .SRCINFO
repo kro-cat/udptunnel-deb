@@ -1,7 +1,7 @@
 pkgbase = udptunnel-deb
 	pkgdesc = tunnel UDP packets over a TCP connection
 	pkgver = 1.1.1
-	pkgrel = 1.4
+	pkgrel = 1.5
 	url = http://www1.cs.columbia.edu/~lennox/udptunnel/
 	arch = x86_64
 	license = Unknown
@@ -9,10 +9,6 @@ pkgbase = udptunnel-deb
 	depends = glibc
 	provides = udptunnel
 	source = https://mirrors.kernel.org/ubuntu/pool/universe/u/udptunnel/udptunnel_1.1-10_amd64.deb
-	source = udptunnel@.service
-	source = udptunnel-wrapper
 	sha256sums = 99d4c88fe7c04c77ff9ef4578e57d37eef7a6cb4e44c4be76e8839be6bcec398
-	sha256sums = 178391a0624b0ffbb91950ff826ea82c5e67b5bf5e807f14589717594a67bcbf
-	sha256sums = c76430b888115512255a62e3d922da5c18a4b509c4b1410c2ef8173e5c9bd03f
 
 pkgname = udptunnel-deb

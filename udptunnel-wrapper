@@ -106,7 +106,6 @@ udptunnel "${UDPT_MODE}" "${TCP_ADDR}" ${UDPT_ARGS} "${UDP_ADDR}" &
 
 systemd-notify --status="Exec'ing post-start hooks"
 execute_hooks "${POST_UP}"
-# log INFO "udptunnel started as $!"
 
 systemd-notify --ready
 wait
