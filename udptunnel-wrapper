@@ -53,10 +53,9 @@ getprop() {
 }
 
 # hooks
-PRE_UP="$(getprop PREUP)"
-POST_UP="$(getprop POSTUP)"
-PRE_DOWN="$(getprop PREDOWN)"
-POST_DOWN="$(getprop POSTDOWN)"
+PRE_UP="$(getprop EXECSTARTPRE)"
+POST_UP="$(getprop EXECSTARTPOST)"
+POST_DOWN="$(getprop EXECSTOPPOST)"
 execute_hooks() {
   for hook in "$@"
   do
@@ -102,18 +101,6 @@ esac
 execute_hooks "${PRE_UP}"
 
 udptunnel "${UDPT_MODE}" "${LISTEN}" ${UDPT_ARGS} "${CONNECT}" &
-
-#CHILD="$!"
-hndl_exit() {
-  # if [ -n "${CHILD}" ] && [ -d /proc/"${CHILD}" ]
-  # then
-    execute_hooks "${PRE_DOWN}"
-  # else
-  #   log WARN "child process with pid ${CHILD} was not found. PreDown hooks were skipped"
-  # fi
-  trap - EXIT INT TERM
-}
-trap hndl_exit EXIT INT TERM
 
 execute_hooks "${POST_UP}"
 # log INFO "udptunnel started as $!"
