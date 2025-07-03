@@ -3,7 +3,7 @@ pkgname=udptunnel-deb
 _pkgname=udptunnel
 pkgver=1.1.1
 _pkgver=1.1
-pkgrel=1.1
+pkgrel=1.2
 _pkgrel=10
 pkgdesc="tunnel UDP packets over a TCP connection"
 arch=('x86_64')
@@ -22,8 +22,8 @@ source=(
 )
 sha256sums=(
   '99d4c88fe7c04c77ff9ef4578e57d37eef7a6cb4e44c4be76e8839be6bcec398'
-  'aaa3fe60ff9496e0f5fb92ff127d5651c1e214230e4041c8dd87efb45696615b'
-  '20e276be2a71666ec3fbdaac5bb13eabbecb6cab1e9de63b7c1dc19e12ca1250'
+  '490900375848e2767d13bbfc8dd6bc885fc083330cce550b339702553d1c82fb'
+  '5c9cf0e156b3b572267ddcd05b3052c45ed4ab31bf35d20fba28059b845e3c54'
 )
 
 prepare() {

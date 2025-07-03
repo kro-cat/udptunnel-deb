@@ -13,6 +13,7 @@ KeyringMode=private
 LockPersonality=yes
 MemoryDenyWriteExecute=yes
 NoNewPrivileges=yes
+NotifyAccess=all
 PrivateDevices=yes
 PrivateTmp=yes
 ProtectClock=yes
