@@ -58,8 +58,9 @@ POST_UP="$(getprop POSTUP)"
 PRE_DOWN="$(getprop PREDOWN)"
 POST_DOWN="$(getprop POSTDOWN)"
 execute_hooks() {
-  echo "$@" | while IFS= read -r hook
+  for hook in "$@"
   do
+    [ -n "${hook}" ] || continue
     log INFO "executing \`${hook}'"
     (eval "${hook}")
   done
