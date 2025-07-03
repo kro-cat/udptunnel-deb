@@ -98,13 +98,20 @@ case "${LOGLEVEL}" in
 esac
 
 
+systemd-notify --status="Exec'ing pre-start hooks"
 execute_hooks "${PRE_UP}"
 
+systemd-notify --status="Starting udptunnel"
 udptunnel "${UDPT_MODE}" "${LISTEN}" ${UDPT_ARGS} "${CONNECT}" &
 
+systemd-notify --status="Exec'ing post-start hooks"
 execute_hooks "${POST_UP}"
 # log INFO "udptunnel started as $!"
 
+systemd-notify --ready
 wait
+systemd-notify --stopping
+
+systemd-notify --status="Exec'ing post-stop hooks"
 execute_hooks "${POST_DOWN}"
 
