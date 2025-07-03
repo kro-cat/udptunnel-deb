@@ -71,13 +71,13 @@ case "${MODE}" in
   server) # server (tcp->udp)
     UDPT_MODE="-s"
     [ -z "$(getprop LISTENADDRESS)" ] || log WARN "ListenAddress is ignored in server mode"
-    LISTEN="$(getprop LISTENPORT)"
-    CONNECT="$(getprop ENDPOINT)"
+    TCP_ADDR="$(getprop LISTENPORT)"
+    UDP_ADDR="$(getprop ENDPOINT)"
     ;;
   *) # client (udp->tcp)
     UDPT_MODE="-c"
-    LISTEN="$(getprop LISTENADDRESS):$(getprop LISTENPORT)"
-    CONNECT="$(getprop ENDPOINT)"
+    UDP_ADDR="$(getprop LISTENADDRESS):$(getprop LISTENPORT)"
+    TCP_ADDR="$(getprop ENDPOINT)"
     ;;
   *) log ERROR "${MODE} is not a valid Mode"; exit 1 ;;
 esac
@@ -102,7 +102,7 @@ systemd-notify --status="Exec'ing pre-start hooks"
 execute_hooks "${PRE_UP}"
 
 systemd-notify --status="Starting udptunnel"
-udptunnel "${UDPT_MODE}" "${LISTEN}" ${UDPT_ARGS} "${CONNECT}" &
+udptunnel "${UDPT_MODE}" "${TCP_ADDR}" ${UDPT_ARGS} "${UDP_ADDR}" &
 
 systemd-notify --status="Exec'ing post-start hooks"
 execute_hooks "${POST_UP}"
