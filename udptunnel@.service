@@ -5,7 +5,7 @@ Documentation=man:udptunnel(1)
 [Service]
 Type=notify
 Restart=on-failure
-ExecStart=/usr/lib/udptunnel/udptunnel-wrapper /etc/udptunnel/%i.conf
+ExecStart=/usr/lib/udptunnel/udptunnel-wrapper %i
 StandardOutput=journal
 StandardError=journal
 DynamicUser=yes

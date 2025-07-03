@@ -1,9 +1,15 @@
 #!/usr/bin/env sh
 
-EXECNAME="udptunnel-wrapper"
+EXECNAME="$(basename "$0")"
 
 log() {
-  echo "${EXECNAME}: $@"
+  LVL="$(echo "$1" | tr '[:lower:]' '[:upper:]')"
+  shift 1
+  LOG="${EXECNAME}: ${LVL}: $@"
+  case "$LVL" in
+    WARN|ERROR) 1>&2 echo "${LOG}";;
+    *) echo "${LOG}";;
+  esac
 }
 
 usage() {
@@ -26,18 +32,19 @@ while :; do
 done
 
 shift 1
-
-if [ "$#" -ne 1 ]
+if [ "$#" -lt 1 ]
 then
-  log "ERROR: path to config file is required"
+  log ERROR "config file is required"
   usage
   exit 2
 fi
-
-CONFIG_FILE="$(cat "$(realpath "$1")")"
+CONFIG_FILE="$(realpath "/etc/udptunnel/$(basename "$1").conf")"
+[ ! -e "${CONFIG_FILE}" ] && log ERROR "${CONFIG_FILE} does not exist" && exit 1
+CONFIG_FILE="$(cat "${CONFIG_FILE}")"
 shift 1
 
 getprop() {
+  local SECTION PROPERTY
   SECTION="GLOBAL"
   PROPERTY="$1"
   echo "${CONFIG_FILE}" | \
@@ -50,14 +57,20 @@ PRE_UP="$(getprop PREUP)"
 POST_UP="$(getprop POSTUP)"
 PRE_DOWN="$(getprop PREDOWN)"
 POST_DOWN="$(getprop POSTDOWN)"
+execute_hooks() {
+  echo "$@" | while IFS= read -r hook
+  do
+    log INFO "executing \`${hook}'"
+    (eval "${hook}")
+  done
+}
 
 # config
 MODE="$(getprop MODE | tr '[:upper:]' '[:lower:]' )"
-
 case "${MODE}" in
   server) # server (tcp->udp)
     UDPT_MODE="-s"
-    [ -z "$(getprop LISTENADDRESS)" ] || log "WARN: ListenAddress is ignored in server mode"
+    [ -z "$(getprop LISTENADDRESS)" ] || log WARN "ListenAddress is ignored in server mode"
     LISTEN="$(getprop LISTENPORT)"
     CONNECT="$(getprop ENDPOINT)"
     ;;
@@ -66,6 +79,7 @@ case "${MODE}" in
     LISTEN="$(getprop LISTENADDRESS):$(getprop LISTENPORT)"
     CONNECT="$(getprop ENDPOINT)"
     ;;
+  *) log ERROR "${MODE} is not a valid Mode"; exit 1 ;;
 esac
 
 UDPT_ARGS=""
@@ -80,6 +94,29 @@ case "${LOGLEVEL}" in
   1) UDPT_ARGS="${UDPT_ARGS} -v" ;;
   2) UDPT_ARGS="${UDPT_ARGS} -vv" ;;
   3) UDPT_ARGS="${UDPT_ARGS} -vvv" ;;
+  *) log WARN "${LOGLEVEL} is not a valid Logging Level" ;;
 esac
 
-udptunnel "${UDPT_MODE}" "${LISTEN}" ${UDPT_ARGS} "${CONNECT}"
+
+execute_hooks "${PRE_UP}"
+
+udptunnel "${UDPT_MODE}" "${LISTEN}" ${UDPT_ARGS} "${CONNECT}" &
+
+#CHILD="$!"
+hndl_exit() {
+  # if [ -n "${CHILD}" ] && [ -d /proc/"${CHILD}" ]
+  # then
+    execute_hooks "${PRE_DOWN}"
+  # else
+  #   log WARN "child process with pid ${CHILD} was not found. PreDown hooks were skipped"
+  # fi
+  trap - EXIT INT TERM
+}
+trap hndl_exit EXIT INT TERM
+
+execute_hooks "${POST_UP}"
+# log INFO "udptunnel started as $!"
+
+wait
+execute_hooks "${POST_DOWN}"
+
